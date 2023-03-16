@@ -37,3 +37,9 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# data
+
+covid_data
+
+covid-19-data-master
