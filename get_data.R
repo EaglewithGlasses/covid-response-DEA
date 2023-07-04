@@ -1,6 +1,7 @@
 library(readr)
 library(lubridate)
 library(dplyr)
+library(xlsx) 
 
 # Get data
 url <- "https://covid.ourworldindata.org/data/owid-covid-data.csv"
@@ -58,6 +59,7 @@ View(covid_data)
 #Selection of valid data (Rows)
 covid_data <- covid_data[complete.cases(covid_data), ]
 covid_data
+write.xlsx( covid_data,"Covid_data.xlsx")
 View(covid_data)
 
 
