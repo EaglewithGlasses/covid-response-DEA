@@ -9,6 +9,8 @@ library(PerformanceAnalytics)
 library(ggcorrplot)
 library(writexl)
 library(sf)
+library("rnaturalearth")
+library("rnaturalearthdata")
 
 # Get data
 url <- "https://covid.ourworldindata.org/data/owid-covid-data.csv"
@@ -126,9 +128,19 @@ for(country in 1:Notefficient){
 }
 colnames(DeaResults)[1] ="name"
 
-write_xlsx(DeaResults, 'DeaResults.xlsx')
+write_xlsx(DeaResults, 'DeaResultsVRS.xlsx')
 # Results
 View(DeaResults)
+# map
+world <- ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+joined <- left_join(world, DeaResults, by='name')
+View(select(joined, name, Countries.eff))
+
+ggplot(data = world) +
+  geom_sf(aes(fill = joined$Countries.eff)) +
+  scale_fill_viridis_c(option = "plasma", trans = "log10") +
+  labs(title="Efficiency of countries in logarithmic scale with VRS",fill = "Efficiency") 
 
 # CRS model
 Countries <- dea(x, y, SLACK = TRUE, DUAL = TRUE, RTS = "crs", ORIENTATION = "out")
@@ -149,14 +161,11 @@ for(country in 1:Notefficient){
   }
 }
 
-write_xlsx(DeaResults, 'DeaResults.xlsx')
+write_xlsx(DeaResults, 'DeaResultsCRS.xlsx')
 # Results
 View(DeaResults)
 
 # map
-library("rnaturalearth")
-library("rnaturalearthdata")
-
 world <- ne_countries(scale = "medium", returnclass = "sf")
 class(world)
 joined <- left_join(world, DeaResults, by='name')
@@ -164,7 +173,7 @@ View(select(joined, name, Countries.eff))
 
 ggplot(data = world) +
   geom_sf(aes(fill = joined$Countries.eff)) +
-  scale_fill_viridis_c(option = "plasma", trans = "log2") +
-  labs(title="Efficiency of countries in logarithmic scale",fill = "Efficiency") 
+  scale_fill_viridis_c(option = "plasma", trans = "log10") +
+  labs(title="Efficiency of countries in logarithmic scale with CRS",fill = "Efficiency") 
 
 
