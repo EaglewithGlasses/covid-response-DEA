@@ -93,13 +93,13 @@ View(covid_data)
 
 
 # Simple initial model with aggregate information (Latest totals)
-m <- max(covid_data$date)
 mod1 <- covid_data %>%
-  filter(date == m) %>%
-  select(location, population, total_cases, total_deaths) %>%
+  select(location, date, population, total_cases, total_deaths) %>%
+  group_by(location) %>%
+  filter(date == max(date)) %>%
   na.omit
   
-View(mod1)
+# View(mod1)
 
 #DEA
 x <- with(mod1, cbind(population, total_cases)) #Inputs
@@ -158,10 +158,13 @@ library("rnaturalearth")
 library("rnaturalearthdata")
 
 world <- ne_countries(scale = "medium", returnclass = "sf")
-joined <- dplyr::inner_join(world, DeaResults, by = "name") %>% select(Countries.eff)
 class(world)
+joined <- left_join(world, DeaResults, by='name')
+View(select(joined, name, Countries.eff))
+
 ggplot(data = world) +
-  geom_sf(aes(fill = joined)) +
-  scale_fill_viridis_c(option = "plasma", trans = "sqrt")
+  geom_sf(aes(fill = joined$Countries.eff)) +
+  scale_fill_viridis_c(option = "plasma", trans = "log2") +
+  labs(title="Efficiency of countries in logarithmic scale",fill = "Efficiency") 
 
 
